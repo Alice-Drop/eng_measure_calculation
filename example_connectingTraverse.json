@@ -1,0 +1,86 @@
+{
+   "type": "ConnectingTraverse",
+   "start_line_angle_alpha": "_Angle:237'59'30'",
+   "points": [
+      {
+         "pos": [
+            2570.689,
+            1215.637
+         ],
+         "name": "B",
+         "beta_angle": "_Angle:99'1'0'",
+         "beta_angle_direction": "left_beta"
+      },
+      {
+         "pos": [],
+         "name": "1",
+         "beta_angle": "_Angle:167'45'36'",
+         "beta_angle_direction": "left_beta"
+      },
+      {
+         "pos": [],
+         "name": "2",
+         "beta_angle": "_Angle:123'11'24'",
+         "beta_angle_direction": "left_beta"
+      },
+      {
+         "pos": [],
+         "name": "3",
+         "beta_angle": "_Angle:189'20'36'",
+         "beta_angle_direction": "left_beta"
+      },
+      {
+         "pos": [],
+         "name": "4",
+         "beta_angle": "_Angle:179'59'18'",
+         "beta_angle_direction": "left_beta"
+      },
+      {
+         "pos": [
+            2166.646,
+            1757.344
+         ],
+         "name": "C",
+         "beta_angle": "_Angle:129'27'24'",
+         "beta_angle_direction": "left_beta"
+      }
+   ],
+   "lengths": [
+      {
+         "LineDataKeys.length": 225.848,
+         "LineDataKeys.component_points": [
+            "B",
+            "1"
+         ]
+      },
+      {
+         "LineDataKeys.length": 139.026,
+         "LineDataKeys.component_points": [
+            "1",
+            "2"
+         ]
+      },
+      {
+         "LineDataKeys.length": 172.572,
+         "LineDataKeys.component_points": [
+            "2",
+            "3"
+         ]
+      },
+      {
+         "LineDataKeys.length": 100.067,
+         "LineDataKeys.component_points": [
+            "3",
+            "4"
+         ]
+      },
+      {
+         "LineDataKeys.length": 102.483,
+         "LineDataKeys.component_points": [
+            "4",
+            "C"
+         ]
+      }
+   ],
+   "end_line_angle_alpha": "_Angle:46'45'24'"
+}
