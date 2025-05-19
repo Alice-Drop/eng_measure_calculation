@@ -22,6 +22,7 @@ class LineDataKeys:
     length = "LineDataKeys.length"
     component_points = "LineDataKeys.component_points"
     alpha = "LineDataKeys.alpha"
+    name = "LineDataKeys.name"
 
 
 def LineDataItem(length, component_points: list, alpha=None):
@@ -29,5 +30,6 @@ def LineDataItem(length, component_points: list, alpha=None):
     return {
         LineDataKeys.length: length,
         LineDataKeys.component_points: component_points,
-        LineDataKeys.alpha: alpha
+        LineDataKeys.alpha: alpha,
+        LineDataKeys.name: "".join(component_points)
     }
