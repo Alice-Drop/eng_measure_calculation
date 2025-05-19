@@ -15,7 +15,7 @@ class DEFAULT:
     LINE_WIDTH = 5
     DOTTED_LINE_LENGTH = 10  # 虚线的每个实线部分多长
     DOTTED_GAP = 10  # 虚线的实线间隔多大
-    DOT_DIAMETER = 15
+    DOT_DIAMETER = 10
 
 
 SCALE = 1.0

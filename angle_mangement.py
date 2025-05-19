@@ -33,7 +33,8 @@ def parseDMS(string: str) -> list:
     elif part_cont == 2:  # 如 45'32‘
         deg, minute = strongInt(string.split("'")[0]), strongInt(string.split("'")[1])
     elif part_cont == 3:  # 如 45'32‘56’
-        deg, minute, second = strongInt(string.split("'")[0]), strongInt(string.split("'")[1]), strongInt(string.split("'")[2])
+        deg, minute, second = strongInt(string.split("'")[0]), strongInt(string.split("'")[1]), strongInt(
+            string.split("'")[2])
     else:
         raise ValueError(f"Warning! Too many \"\'\" in DMS text {string}.")
 
@@ -77,6 +78,7 @@ class DEC:
 
         return DMS(f"{str(deg)}'{str(minute)}'{str(second)}'")
 
+
 class AngleTypes:
     unsigned = "AngleTypes.unsigned"
     eng_beta = "AngleTypes.eng_beta"
@@ -114,7 +116,7 @@ class Angle:
 
     def valueMath(self, wanted_format=AngleFormats.DEC):
         if (self.angle_type == AngleTypes.math_east_angle) \
-                or (self.format == AngleTypes.unsigned)\
+                or (self.format == AngleTypes.unsigned) \
                 or (self.format == AngleTypes.eng_beta):
             return self.valueDEC()
         elif self.angle_type == AngleTypes.eng_alpha:
@@ -167,6 +169,13 @@ class Angle:
                 value_2 = other.valueDEC()
                 result = value_1 - value_2
                 return result
+
+    def __str__(self):
+        return f"_Angle:{self.string}"
+
+    def __repr__(self):
+        return f"_Angle_{self.string}"
+
 
 class AngleDirection:
     left_beta = "left_beta"
