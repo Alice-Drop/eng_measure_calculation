@@ -33,3 +33,16 @@ def LineDataItem(length, component_points: list, alpha=None):
         LineDataKeys.alpha: alpha,
         LineDataKeys.name: "".join(component_points)
     }
+
+
+class MeasureType:
+    ClosedTraverse = "ClosedTraverse"  # 闭合导线
+    ConnectingTraverse = "ConnectingTraverse"  # 附合导线
+
+
+class MeasureDataKeys:
+    measureType = "type"
+    start_line_angle_alpha = "start_line_angle_alpha"  # 开始直线的方位角α_AB
+    points = "points"
+    lines = "lines"
+    end_line_angle_alpha = "end_line_angle_alpha"

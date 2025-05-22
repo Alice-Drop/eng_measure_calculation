@@ -1,6 +1,7 @@
 import math
 from angle_mangement import Angle, AngleDirection
-from basic_items_definition import PointDataKeys, PointDataItem
+from basic_items_definition import *
+from testing_data import connectingTraverse_test_data
 
 
 def the_coming_alpha(current_alpha, beta_here, beta_direction=AngleDirection.left_beta):
@@ -10,8 +11,25 @@ def the_coming_alpha(current_alpha, beta_here, beta_direction=AngleDirection.lef
         next_alpha_value = current_alpha.valueDEC() - turning_angle_value
     else:
         next_alpha_value = current_alpha.valueDEC() + turning_angle_value
+        next_alpha_value = round(next_alpha_value, 6)
 
     return Angle(str(next_alpha_value))
+
+
+def get_last_alpha(first_alpha, points_data):
+    alpha = None
+    print()
+    for i in range(len(points_data)):
+        point = points_data[i]
+
+        beta = point[PointDataKeys.beta_angle]
+        direction = point[PointDataKeys.beta_angle_direction]
+        if i == 0:
+            alpha = the_coming_alpha(first_alpha, beta, direction)
+        else:
+            alpha = the_coming_alpha(alpha, beta, direction)
+
+    return alpha
 
 
 def sin_deg(deg):
@@ -20,6 +38,20 @@ def sin_deg(deg):
 
 def cos_deg(deg):
     return math.cos(math.radians(deg))
+
+
+def next_pos(pos, delta: list, v: list):
+    """
+    计算下一个点
+    :param pos: 上一点坐标
+    :param delta: 差值
+    :param v: 修正值
+    :return:
+    """
+    previous_x, previous_y = pos
+    delta_x, delta_y = delta
+    v_x, v_y = v
+    return [previous_x + delta_x + v_x, previous_y + delta_y + v_y]
 
 
 def forward_calculation(start_point_pos: list, alpha: Angle, length):
@@ -51,6 +83,12 @@ def forward_calculation(start_point_pos: list, alpha: Angle, length):
     return [start_point_pos[0] + delta_x, start_point_pos[1] + delta_y]
 
 
+def forward_calculation_get_delta(alpha: Angle, length):
+    delta_x = cos_deg(alpha.valueDEC()) * length
+    delta_y = sin_deg(alpha.valueDEC()) * length
+    return [delta_x, delta_y]
+
+
 if __name__ == "__main__":
     alpha_AB = Angle("237'59'30'")
     alpha_B1 = the_coming_alpha(alpha_AB, Angle("99'1'0'"), AngleDirection.left_beta)
@@ -65,3 +103,7 @@ if __name__ == "__main__":
     print(forward_calculation(point_1_pos,  # [2299.7909872186856, 1303.8526059909495],
                               alpha_12,  # 144.768333
                               136.026))
+
+    start_alpha = connectingTraverse_test_data[MeasureDataKeys.start_line_angle_alpha]
+    points = connectingTraverse_test_data[MeasureDataKeys.points]
+    print(f"开始测试角度求一次计算最后alpha：{get_last_alpha(start_alpha, points)}")

@@ -41,6 +41,14 @@ def parseDMS(string: str) -> list:
     return [deg, minute, second]
 
 
+def DMStoStr(DMS_data: list):
+    string = ""
+    for item in DMS_data:
+        string += str(item)
+        string += "'"
+    return string
+
+
 class AngleFormats:
     DMS = "DMS"
     DEC = "DEC"
@@ -55,6 +63,13 @@ class DMS:
     def toDEC(self):
         dec_value = self.value[0] + self.value[1] * (1 / 60) + self.value[2] * (1 / 3600)
         return DEC(str(dec_value))
+
+    def toStr(self):
+        string = ""
+        for item in self.value:
+            string += str(item)
+            string += "'"
+        return string
 
 
 class DEC:
@@ -77,6 +92,9 @@ class DEC:
                 second = round(minute_rest * 60, 6)  # 用四舍五入解决了浮点数精度问题
 
         return DMS(f"{str(deg)}'{str(minute)}'{str(second)}'")
+
+    def toStr(self):
+        return self.string
 
 
 class AngleTypes:
@@ -139,12 +157,14 @@ class Angle:
                     value_2 = other.valueDEC()
                     result = value_1 + value_2
 
-                return result
+                return Angle(str(result))
             else:
                 value_1 = self.valueDEC()
                 value_2 = other.valueDEC()
                 result = value_1 + value_2
-                return result
+                return Angle(str(result))
+        else:
+            raise TypeError(f"警告！无法把Angle与{type(other)} {other}相加。")
 
     def __sub__(self, other):
         if isinstance(other, Angle):  # 都是Angle对象
@@ -163,18 +183,24 @@ class Angle:
                     value_2 = other.valueDEC()
                     result = value_1 - value_2
 
-                return result
+                return Angle(str(result))
             else:
                 value_1 = self.valueDEC()
                 value_2 = other.valueDEC()
                 result = value_1 - value_2
-                return result
+                return Angle(str(result))
+        else:
+            raise TypeError(f"警告！无法把Angle与{type(other)} {other}相加。")
+
+    def __truediv__(self, other):
+        if (type(other) is int) or (type(other) is float):
+            return self.valueDEC() / other
 
     def __str__(self):
-        return f"_Angle:{self.string}"
+        return f"_Angle:{DMStoStr(self.valueDMS())}({self.valueDEC()})"
 
     def __repr__(self):
-        return f"_Angle_{self.string}"
+        return self.__str__()
 
 
 class AngleDirection:
