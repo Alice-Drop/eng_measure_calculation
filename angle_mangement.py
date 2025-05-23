@@ -62,6 +62,7 @@ class DMS:
 
     def toDEC(self):
         dec_value = self.value[0] + self.value[1] * (1 / 60) + self.value[2] * (1 / 3600)
+        dec_value = round(dec_value, 7)  # 避免float精度问题
         return DEC(str(dec_value))
 
     def toStr(self):
@@ -82,14 +83,17 @@ class DEC:
         deg = minute = second = 0
         deg = self.value // 1
         deg_rest = self.value % 1
+        # print(f"\n正在尝试转换{self.value}为DMS")
+        # print(f"度：{deg}, 剩下内容：{deg_rest}")
         if deg_rest != 0:
             minute = deg_rest * 60
             minute_rest = round(minute % 1, 6)
-
+            # print(f"分：{minute}, 剩下内容：{minute_rest}")
             if minute_rest != 0:
                 minute = minute // 1
                 # print(f"剩下的min{minute_rest}")
-                second = round(minute_rest * 60, 6)  # 用四舍五入解决了浮点数精度问题
+                second = round(minute_rest * 60, 0)
+                # print(f"秒：{second},")
 
         return DMS(f"{str(deg)}'{str(minute)}'{str(second)}'")
 
@@ -124,6 +128,7 @@ class Angle:
         if self.format == AngleFormats.DMS:
             return self.data.value
         else:
+            # print(f"正在执行valueDMS,检测到需要toDMS，DMS的结果为{self.data.toDMS()}，结果为{self.data.toDMS().value}")
             return self.data.toDMS().value
 
     def valueDEC(self):
@@ -197,7 +202,7 @@ class Angle:
             return self.valueDEC() / other
 
     def __str__(self):
-        return f"_Angle:{DMStoStr(self.valueDMS())}({self.valueDEC()})"
+        return f"_Angle:{DMStoStr(self.valueDMS())}({self.valueDEC()}°)"
 
     def __repr__(self):
         return self.__str__()
@@ -225,7 +230,13 @@ def json_txt_to_angle(txt: str):
 
 if __name__ == "__main__":
     angle_1 = Angle("120'30'52'")
-    print(angle_1.valueDEC())
+    print(angle_1)
     print(angle_1.valueDMS())
     angle_2 = Angle("45.50")
     print(angle_1 - angle_2)
+
+    # 追加稳定性测试
+    angle_3 = Angle("99.0166667")
+    print(f"3:{angle_3}, 文本为{angle_3.string}")
+    angle_3 = Angle("99.01833336666667")
+    print(f"3:{angle_3}, 文本为{angle_3.string}")

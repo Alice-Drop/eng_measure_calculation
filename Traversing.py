@@ -128,7 +128,6 @@ def connectionTraverse_calculate(traverse_data: dict):
         for i in range(len(exp_data_lines)):
             line = exp_data_lines[i]
 
-
     tt.done()
 
 
@@ -222,63 +221,6 @@ def connectionTraverse_calculate_v2(traverse_data: dict):
 
         print(f"已完成，正在生成表格......")
         generate_table.show_table(generate_table.generate_points_table(raw_points, corrected_points, v_beta))
-
-'''
-        # 在该点之前的
-        previous_line_alpha = traverse_data.get(MeasureDataKeys.start_line_angle_alpha)
-        measured_points = traverse_data[MeasureDataKeys.points]
-        calculated_points_delta = []
-        for i in range(len(measured_points)):
-            # 关键：每个点前面的这段线，比如一开始的AB是B前面的，α为已知。
-
-            if i != len(measured_points) - 1:
-                # 如果是最后一个点就不需要算了，后面就是结尾的已知直线了。这个的目的只是算出各个点的初步计算的坐标
-                print(f"\n{i}.开始处理点{measured_points[i]}")
-                if i == 0:
-                    previous_line_alpha = traverse_data.get(MeasureDataKeys.start_line_angle_alpha)
-                else:
-                    # 注意，由于不会有AB的数据，第一段线的α是从外部来的，所以第一个点不用到线数据，会少一条，所以是i-1
-                    #previous_line_alpha =
-                print(f"确定当前的点上一条线的alpha为：{previous_line_alpha}")
-
-                point = measured_points[i]
-                beta = point[PointDataKeys.beta_angle]
-                beta_direction = point[PointDataKeys.beta_angle_direction]
-                coming_line_alpha = calculate.the_coming_alpha(previous_line_alpha, beta, beta_direction)
-                # 把next alpha记录到下一条线
-                coming_line = exp_data_lines[i]
-                coming_line[LineDataKeys.alpha] = coming_line_alpha
-
-                pos = point[PointDataKeys.pos]
-                next_line_length = coming_line[LineDataKeys.length]
-                print(
-                    f"准备坐标正算，坐标{pos},下个alpha{coming_line_alpha},下段线{coming_line[LineDataKeys.name]}长度为{next_line_length}")
-                next_point_pos = calculate.forward_calculation(pos, coming_line_alpha, next_line_length)
-                # 把next point写入
-                next_point = exp_data_points[i + 1]
-                next_point[PointDataKeys.pos] = next_point_pos
-                print(f"写入后的next_point是否保持一致，1-4没有坐标？{next_point}")
-
-                print(
-                    f"坐标正算结果：下一条线{"".join(coming_line[LineDataKeys.component_points])}的alpha为{coming_line_alpha}")
-                print(f"下一个点{next_point[PointDataKeys.name]}坐标为{next_point[PointDataKeys.pos]}")
-
-        print(f"初步计算结果：{exp_data_points}")
-        rel_end_point = traverse_data[MeasureDataKeys.points][-1]
-        exp_end_point = exp_data_points[-1]
-        print(f"预测的C点：{exp_end_point} \n实际的C点：{rel_end_point}")
-        f_x, f_y = get_fx_fy(rel_end_point[PointDataKeys.pos], exp_end_point[PointDataKeys.pos])
-        print(f"fx {f_x}  f_y {f_y}")
-
-        total_distance = total_D(exp_data_lines)
-        print(f"全长{total_distance}")
-        for i in range(len(exp_data_lines)):
-            line = exp_data_lines[i]
-
-    tt.done()
-'''
-
-
 
 
 if __name__ == "__main__":

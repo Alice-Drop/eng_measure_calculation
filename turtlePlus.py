@@ -17,8 +17,17 @@ class DEFAULT:
     DOTTED_GAP = 10  # 虚线的实线间隔多大
     DOT_DIAMETER = 10
 
+    FONT_HEIGHT = 8
+    FONT_ALIGN = ""
+
+class ALIGN:
+    LEFT = "left"
+    RIGHT = "right"
+    CENTER = "center"
+
 
 SCALE = 1.0
+FONT_SCALING = False
 
 
 def set_scale(scale_value):
@@ -151,6 +160,14 @@ def goto(target_point: (list or tuple), line_mode=LineModes.solid, line_width=DE
 
     if if_dot_at_end:
         tt.dot(dot_diameter, dot_color)
+
+
+def write(string: str, pos=tt.pos(), align=ALIGN.LEFT, font_height=DEFAULT.FONT_HEIGHT):
+    if FONT_SCALING:
+        font_height *= SCALE
+    tt.goto(list(pos))
+    tt.write(string, align=align)
+
 
 def test():
     goto([0, 0], line_mode=LineModes.none)
