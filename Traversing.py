@@ -9,6 +9,7 @@ from basic_items_definition import *
 from testing_data import connectingTraverse_test_data
 from typing import List
 import generate_table
+import os
 
 
 def get_fx_fy(rel_pos, expected_pos):
@@ -131,7 +132,8 @@ def connectionTraverse_calculate(traverse_data: dict):
     tt.done()
 
 
-def connectionTraverse_calculate_v2(traverse_data: dict):
+def connectionTraverse_calculate_v2(traverse_data: dict, wanted_accuracy: int):
+    # 对附合导线进行分析。需要传入一个精度。
     ttp.set_scale(0.3)
     print("开始分析......")
     if traverse_data.get(MeasureDataKeys.measureType) != MeasureType.ConnectingTraverse:
@@ -141,7 +143,7 @@ def connectionTraverse_calculate_v2(traverse_data: dict):
         if len(traverse_data.get(MeasureDataKeys.points)) != len(traverse_data.get(MeasureDataKeys.lines)) + 1:
             raise ValueError("警告，传入的点数量并非比线段数多1，请检查数据缺失问题。")
 
-        # 先对夹角进行平差
+        # 先对夹角进行平差 这部分已经通过验收，非常准确。
         raw_points = traverse_data[MeasureDataKeys.points]
         beta_correction_points_data = copy.deepcopy(raw_points)
         print(f"初始的点数据，夹角未平差{beta_correction_points_data}")
@@ -152,18 +154,20 @@ def connectionTraverse_calculate_v2(traverse_data: dict):
         print(f"验证：first:{first_alpha}  rel_end:{rel_end_alpha} \nexp_end{calculated_end_alpha}\n")
         beta_correction_points_data = get_points_beta_corrected(rel_end_alpha, calculated_end_alpha, beta_correction_points_data)
         v_beta = get_v_beta(rel_end_alpha, calculated_end_alpha, beta_correction_points_data)
+        v_beta = round(v_beta, 6)
         print(f"平差后的点数据{beta_correction_points_data}")
 
         # 计算Δx、Δy，得到f_x、f_y，最后平差
         previous_line_alpha = traverse_data.get(MeasureDataKeys.start_line_angle_alpha)
         corrected_points = beta_correction_points_data  # 使用β平差后的点
-        calculated_lines = copy.deepcopy(traverse_data[MeasureDataKeys.lines])
+        raw_lines = traverse_data[MeasureDataKeys.lines]
+        corrected_lines = copy.deepcopy(raw_lines)
 
         total_delta_x = 0
         total_delta_y = 0
 
         delta_data = []
-
+        print("\n-----开始进行坐标的平差和计算-----")
         for i in range(len(corrected_points)):
             # 关键：每个点前面的这段线，比如一开始的AB是B前面的，α为已知。
             if i != len(corrected_points) - 1:
@@ -172,7 +176,7 @@ def connectionTraverse_calculate_v2(traverse_data: dict):
                 if i == 0:
                     previous_line_alpha = traverse_data.get(MeasureDataKeys.start_line_angle_alpha)
                 else:
-                    previous_line_alpha = calculated_lines[i - 1][LineDataKeys.alpha]
+                    previous_line_alpha = corrected_lines[i - 1][LineDataKeys.alpha]
 
                 # 注意，由于不会有AB的数据，第一段线的α是从外部来的，所以第一个点不用到线数据，会少一条，所以是i-1
                 # previous_line_alpha =
@@ -183,46 +187,54 @@ def connectionTraverse_calculate_v2(traverse_data: dict):
                 print(f"准备分析，内容为：beta {beta}  beta_direction  {beta_direction}")
                 coming_alpha = calculate.the_coming_alpha(previous_line_alpha, beta, beta_direction)
 
-                coming_line = calculated_lines[i]
+                coming_line = corrected_lines[i]
                 coming_line[LineDataKeys.alpha] = coming_alpha  # 把之前算出的下一条线的α记录，为计算下一条线的角度提供依据
                 coming_line_length = coming_line[LineDataKeys.length]
                 # 用坐标正算算出长度
                 delta_x, delta_y = calculate.forward_calculation_get_delta(coming_alpha, coming_line_length)
-
+                delta_x = round(delta_x, wanted_accuracy)
+                delta_y = round(delta_y, wanted_accuracy)
+                print(f"在该点处的坐标正算结果是，Δ'x ={delta_x}， Δ'y ={delta_y}")
                 total_delta_x += delta_x
                 total_delta_y += delta_y
                 delta_data.append([delta_x, delta_y])
-        print(f"完成坐标正算，ΣΔx = {total_delta_x}, ΣΔy = {total_delta_y}")
+        print(f"完成坐标正算，ΣΔx' = {total_delta_x}, ΣΔy' = {total_delta_y}")
         start_point = corrected_points[0]
         start_pos = start_point[PointDataKeys.pos]
         end_point = corrected_points[-1]
         end_pos = end_point[PointDataKeys.pos]
         f_x, f_y = get_fx_fy_v2([total_delta_x, total_delta_y], start_pos, end_pos)
+        f_x = round(f_x, wanted_accuracy)
+        f_y = round(f_y, wanted_accuracy)
 
         print(f"算出的f_x：{f_x}, f_y:{f_y}")
 
         # 开始对每条线进行平差，算出该点坐标
-        print(f"开始平差、计算坐标")
-        total_distance = total_D(calculated_lines)
+        print(f"\n开始平差、计算坐标")
+        total_distance = total_D(corrected_lines)
         for i in range(len(corrected_points)):
             point = corrected_points[i]
             if i != len(corrected_points) - 1:
                 print(f"对第{i}点{point[PointDataKeys.name]}进行分析，计算下一点。")
                 pos = point[PointDataKeys.pos]
 
-                coming_line = calculated_lines[i]
+                coming_line = corrected_lines[i]
                 coming_line_length = coming_line[LineDataKeys.length]
-                v_x = (coming_line_length / total_distance) * f_x
-                v_y = (coming_line_length / total_distance) * f_y
+                v_x = (coming_line_length / total_distance) * (-f_x)  # 注意！v是与f正负相反的！
+                v_y = (coming_line_length / total_distance) * (-f_y)
+                print(f"即对{coming_line[LineDataKeys.name]}进行处理")
                 next_point_pos = calculate.next_pos(pos, delta_data[i], [v_x, v_y])
                 next_point = corrected_points[i + 1]
                 next_point[PointDataKeys.pos] = next_point_pos
+                coming_line[LineDataKeys.delta_x], coming_line[LineDataKeys.delta_y] = calculate.true_delta(delta_data[i], [v_x, v_y])
                 print(f"下一点{next_point[PointDataKeys.name]}平差后坐标为{next_point_pos}")
 
         print(f"已完成，正在生成表格......")
         generate_table.show_table(generate_table.generate_points_table(raw_points, corrected_points, v_beta))
+        tt.done()
+        os.system("pause")
 
 
 if __name__ == "__main__":
-    connectionTraverse_calculate_v2(connectingTraverse_test_data)
+    connectionTraverse_calculate_v2(connectingTraverse_test_data, 3)
 

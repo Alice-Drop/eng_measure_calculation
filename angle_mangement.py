@@ -202,10 +202,10 @@ class Angle:
             return self.valueDEC() / other
 
     def __str__(self):
-        return f"_Angle:{DMStoStr(self.valueDMS())}({self.valueDEC()}°)"
+        return f"_Angle:{DMStoStr(self.valueDMS())}"
 
     def __repr__(self):
-        return self.__str__()
+        return f"_Angle:{DMStoStr(self.valueDMS())}({self.valueDEC()}°)"
 
 
 class AngleDirection:

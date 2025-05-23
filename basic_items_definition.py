@@ -23,6 +23,8 @@ class LineDataKeys:
     component_points = "LineDataKeys.component_points"
     alpha = "LineDataKeys.alpha"
     name = "LineDataKeys.name"
+    delta_x = "LineDataKeys.delta_x"
+    delta_y = "LineDataKeys.delta_y"
 
 
 def LineDataItem(length, component_points: list, alpha=None):

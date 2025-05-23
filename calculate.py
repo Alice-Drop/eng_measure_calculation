@@ -40,7 +40,7 @@ def cos_deg(deg):
     return math.cos(math.radians(deg))
 
 
-def next_pos(pos, delta: list, v: list):
+def next_pos(pos, delta: list, v: list, accuracy=3):
     """
     计算下一个点
     :param pos: 上一点坐标
@@ -51,7 +51,15 @@ def next_pos(pos, delta: list, v: list):
     previous_x, previous_y = pos
     delta_x, delta_y = delta
     v_x, v_y = v
-    return [previous_x + delta_x + v_x, previous_y + delta_y + v_y]
+    print(f"正在修正，此时v为{v_x}、{v_y}, delta为{delta_x}、{delta_y}"
+          f"修正的增量Δx ={delta_x + v_x}， Δy ={delta_y + v_y}")
+    return [round(previous_x + delta_x + v_x, accuracy), round(previous_y + delta_y + v_y, accuracy)]
+
+
+def true_delta(measured_delta:list, v: list, accuracy=3):
+    delta_x, delta_y = measured_delta
+    v_x, v_y = v
+    return [round(delta_x + v_x, accuracy), round(delta_y + v_y, accuracy)]
 
 
 def forward_calculation(start_point_pos: list, alpha: Angle, length):
@@ -87,6 +95,13 @@ def forward_calculation_get_delta(alpha: Angle, length):
     delta_x = cos_deg(alpha.valueDEC()) * length
     delta_y = sin_deg(alpha.valueDEC()) * length
     return [delta_x, delta_y]
+
+
+def get_accuracy(point, line):
+    # 根据传入的一个点和一条线来确定精度。
+    pos = point[PointDataKeys.pos]
+    length = line[LineDataKeys.length]
+    # 暂停开发。改用别的。
 
 
 if __name__ == "__main__":
