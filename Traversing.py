@@ -3,13 +3,12 @@ import copy
 import angle_mangement
 from angle_mangement import Angle
 import calculate
-import turtle as tt
-import turtlePlus as ttp
 from basic_items_definition import *
 from testing_data import connectingTraverse_test_data
 from typing import List
-import generate_table
+import show_data
 import os
+import drawing
 
 
 def get_fx_fy(rel_pos, expected_pos):
@@ -63,11 +62,7 @@ def get_points_beta_corrected(rel_angle, exp_angle, points):
     return new_points
 
 
-
-
 def connectionTraverse_calculate(traverse_data: dict):
-    dot_diameter = 10
-    ttp.set_scale(0.3)
 
     print("开始分析......")
     if traverse_data.get(MeasureDataKeys.measureType) != MeasureType.ConnectingTraverse:
@@ -129,12 +124,11 @@ def connectionTraverse_calculate(traverse_data: dict):
         for i in range(len(exp_data_lines)):
             line = exp_data_lines[i]
 
-    tt.done()
+
 
 
 def connectionTraverse_calculate_v2(traverse_data: dict, wanted_accuracy: int):
     # 对附合导线进行分析。需要传入一个精度。
-    ttp.set_scale(0.3)
     print("开始分析......")
     if traverse_data.get(MeasureDataKeys.measureType) != MeasureType.ConnectingTraverse:
         print("警告，数据传入错误。")
@@ -226,12 +220,15 @@ def connectionTraverse_calculate_v2(traverse_data: dict, wanted_accuracy: int):
                 next_point_pos = calculate.next_pos(pos, delta_data[i], [v_x, v_y])
                 next_point = corrected_points[i + 1]
                 next_point[PointDataKeys.pos] = next_point_pos
-                coming_line[LineDataKeys.delta_x], coming_line[LineDataKeys.delta_y] = calculate.true_delta(delta_data[i], [v_x, v_y])
+                coming_line[LineDataKeys.init_delta_x], coming_line[LineDataKeys.init_delta_y] = delta_data[i]
+                coming_line[LineDataKeys.true_delta_x], coming_line[LineDataKeys.true_delta_y] = (
+                    calculate.true_delta(delta_data[i], [v_x, v_y]))
                 print(f"下一点{next_point[PointDataKeys.name]}平差后坐标为{next_point_pos}")
 
         print(f"已完成，正在生成表格......")
-        generate_table.show_table(generate_table.generate_points_table(raw_points, corrected_points, v_beta))
-        tt.done()
+        show_data.show_table(show_data.generate_points_table(raw_points, corrected_points, v_beta))
+        show_data.show_table(show_data.generate_lines_table(raw_lines, corrected_lines))
+        drawing.draw(corrected_points)
         os.system("pause")
 
 
