@@ -25,8 +25,8 @@ class LineDataKeys:
     name = "LineDataKeys.name"
     true_delta_x = "LineDataKeys.true_delta_x"  # 修正后的delta
     true_delta_y = "LineDataKeys.true_delta_y"
-    init_delta_x = "LineDataKeys.init_delta_x"  # 未用v修正的、刚通过坐标正算算出来的delta，
-    init_delta_y = "LineDataKeys.init_delta_y"
+    rough_delta_x = "LineDataKeys.rough_delta_x"  # 未用v修正的、刚通过坐标正算算出来的delta，
+    rough_delta_y = "LineDataKeys.init_delta_y"
 
 
 

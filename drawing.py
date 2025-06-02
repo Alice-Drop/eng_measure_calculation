@@ -42,10 +42,10 @@ def draw(corrected_point_data):
     ttp.ensure_appearance(points_pos, ttp.OffsetMode.center)
     ttp.FONT_SCALING = True
 
-    # ttp.SCALE = 0.1
+    ttp.SCALE = 1
     print(f"当前scale: {ttp.SCALE}")
 
-    # ttp.write("start")
+    ttp.write("start")
     count = 0
     for point in corrected_point_data:
         print(f"在{point[PointDataKeys.name]}点{point[PointDataKeys.pos]}，offset为{ttp.OFFSET}")

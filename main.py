@@ -21,12 +21,6 @@ def parse_pos_txt(pos_txt: str, pos_type=int):
 
     return pos
 
-class PointItem:
-    def __init__(self, beta_angle, direction):
-        self.beta_angle = beta_angle
-        self.direction = direction
-
-
 def main():
     with open("example_connectingTraverse.json", "w", encoding="UTF-8") as my_file:
         json.dump(Traversing.connectingTraverse_test_data, my_file,
@@ -70,8 +64,6 @@ def main():
                 MeasureDataKeys.points: points,
                 MeasureDataKeys.end_line_angle_alpha: end_alpha_angle
             }
-
-
 
 
 if __name__ == "__main__":

@@ -64,8 +64,8 @@ def generate_lines_table(raw_lines, corrected_lines):
             raw_line[LineDataKeys.name],
             corrected_line[LineDataKeys.alpha],
             corrected_line[LineDataKeys.length],  # 平距（线段长度）
-            corrected_line[LineDataKeys.init_delta_x],
-            corrected_line[LineDataKeys.init_delta_y],
+            corrected_line[LineDataKeys.rough_delta_x],
+            corrected_line[LineDataKeys.rough_delta_y],
             corrected_line[LineDataKeys.true_delta_x],
             corrected_line[LineDataKeys.true_delta_y]
         ])

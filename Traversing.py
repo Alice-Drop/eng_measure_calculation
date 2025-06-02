@@ -1,6 +1,7 @@
 # 导线测量基础库
 import copy
 import angle_mangement
+import testing_data
 from angle_mangement import Angle
 import calculate
 from basic_items_definition import *
@@ -53,11 +54,12 @@ def get_points_beta_corrected(rel_angle, exp_angle, points):
     """
     f_beta = exp_angle - rel_angle
     v_beta = - (f_beta / len(points))  # 注意公式！这里是负的
+    print(f"f_β={f_beta}, v_β = {v_beta}")
     new_points = copy.deepcopy(points)
     for point in new_points:
         print(f"正在修正点{point[PointDataKeys.name]}的β：{point[PointDataKeys.beta_angle]}")
         point[PointDataKeys.beta_angle] += Angle(str(v_beta))
-        print(f"修正为{point}")
+        print(f"修正为{point[PointDataKeys.beta_angle]}")
     # print(f"函数中返回的平差后的数据{new_points}")
     return new_points
 
@@ -125,12 +127,10 @@ def connectionTraverse_calculate(traverse_data: dict):
             line = exp_data_lines[i]
 
 
-
-
 def connectionTraverse_calculate_v2(traverse_data: dict, wanted_accuracy: int):
     # 对附合导线进行分析。需要传入一个精度。
     print("开始分析......")
-    if traverse_data.get(MeasureDataKeys.measureType) != MeasureType.ConnectingTraverse:
+    if 1 + 1 == 3:  #traverse_data.get(MeasureDataKeys.measureType) != MeasureType.ConnectingTraverse:
         print("警告，数据传入错误。")
     else:
 
@@ -145,10 +145,11 @@ def connectionTraverse_calculate_v2(traverse_data: dict, wanted_accuracy: int):
         rel_end_alpha = traverse_data[MeasureDataKeys.end_line_angle_alpha]
 
         calculated_end_alpha = calculate.get_last_alpha(first_alpha, beta_correction_points_data)
-        print(f"验证：first:{first_alpha}  rel_end:{rel_end_alpha} \nexp_end{calculated_end_alpha}\n")
+        print(f"验证：first:{first_alpha} \n rel_end:{rel_end_alpha} exp_end{calculated_end_alpha}\n")
         beta_correction_points_data = get_points_beta_corrected(rel_end_alpha, calculated_end_alpha, beta_correction_points_data)
         v_beta = get_v_beta(rel_end_alpha, calculated_end_alpha, beta_correction_points_data)
         v_beta = round(v_beta, 6)
+
         print(f"平差后的点数据{beta_correction_points_data}")
 
         # 计算Δx、Δy，得到f_x、f_y，最后平差
@@ -220,7 +221,7 @@ def connectionTraverse_calculate_v2(traverse_data: dict, wanted_accuracy: int):
                 next_point_pos = calculate.next_pos(pos, delta_data[i], [v_x, v_y])
                 next_point = corrected_points[i + 1]
                 next_point[PointDataKeys.pos] = next_point_pos
-                coming_line[LineDataKeys.init_delta_x], coming_line[LineDataKeys.init_delta_y] = delta_data[i]
+                coming_line[LineDataKeys.rough_delta_x], coming_line[LineDataKeys.rough_delta_y] = delta_data[i]
                 coming_line[LineDataKeys.true_delta_x], coming_line[LineDataKeys.true_delta_y] = (
                     calculate.true_delta(delta_data[i], [v_x, v_y]))
                 print(f"下一点{next_point[PointDataKeys.name]}平差后坐标为{next_point_pos}")
@@ -232,6 +233,111 @@ def connectionTraverse_calculate_v2(traverse_data: dict, wanted_accuracy: int):
         os.system("pause")
 
 
+def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
+    print("开始分析......")
+    if traverse_data.get(MeasureDataKeys.measureType) == MeasureType.ConnectingTraverse:
+        print("传入的是附合导线测量数据。")
+    elif traverse_data.get(MeasureDataKeys.measureType) == MeasureType.ClosedTraverse:
+        print("传入的是闭合导线测量数据。")
+    else:
+        raise ValueError("警告，传入的不是允许的数据类型，或类型标记丢失。")
+
+    if len(traverse_data.get(MeasureDataKeys.points)) != len(traverse_data.get(MeasureDataKeys.lines)) + 1:
+        raise ValueError("警告，传入的点数量并非比线段数多1，请检查数据缺失问题。")
+
+    # 先对夹角进行平差 这部分已经通过验收，非常准确。
+    raw_points = traverse_data[MeasureDataKeys.points]
+    corrected_points = copy.deepcopy(raw_points)
+    print(f"初始的点数据，先据此正算，算出结尾线段的α，以此平差。")
+    first_alpha = traverse_data[MeasureDataKeys.start_line_angle_alpha]
+    rel_end_alpha = traverse_data[MeasureDataKeys.end_line_angle_alpha]
+
+    roughly_alphas = calculate.cal_alphas_roughly(first_alpha, raw_points)
+    print(f"计算出各个粗略方位角α'：{roughly_alphas}")
+
+    f_beta = roughly_alphas[-1] - rel_end_alpha
+    if f_beta.valueDEC() > 350:  # 把0 == 360的做进去
+        f_beta -= Angle("360")
+
+    true_alphas = []
+
+
+    print(f"当前是闭合导线。开始平差")
+
+    for i in range(len(raw_points)):
+        point = raw_points[i]
+        if traverse_data[MeasureDataKeys.measureType] == MeasureType.ClosedTraverse:
+            v_beta = -(f_beta / len(raw_points))  # 注意，这里的n可能不一定
+        else:
+            if point[PointDataKeys.beta_angle_direction] == angle_mangement.AngleDirection.right_beta:
+                v_beta = f_beta / len(raw_points)
+            else:
+                v_beta = -(f_beta / len(raw_points))
+
+        beta_here = raw_points[i][PointDataKeys.beta_angle]
+        direction = raw_points[i][PointDataKeys.beta_angle_direction]
+        if i == 0:
+            alpha = calculate.the_coming_alpha(first_alpha, beta_here, direction)
+        else:
+            alpha = calculate.the_coming_alpha(true_alphas[i-1], beta_here, direction)
+        alpha += Angle(str(v_beta))
+        corrected_beta_here = beta_here + Angle(str(v_beta))
+        true_alphas.append(alpha)
+        # print("信息：")
+        # print(traverse_data[MeasureDataKeys.lines])
+        if i != len(raw_points) - 1:  # 由于最后一段是不存在的、校准用的线，实际不存在，所以不能记录，或者说已经记录着end_line_alpha里了
+            traverse_data[MeasureDataKeys.lines][i][LineDataKeys.alpha] = alpha  # 把平差后的准确结果记录
+        print(f"此处{point[PointDataKeys.name]}点下一段线的α修正为{alpha} (此处beta{beta_here}修正为{corrected_beta_here})")
+
+    print("角度平差完毕\n")
+
+    delta_data_rough = []
+    total_delta_rough = [0, 0]
+    raw_lines = traverse_data[MeasureDataKeys.lines]
+    for line in raw_lines:
+        length = line[LineDataKeys.length]
+        name = line[LineDataKeys.name]
+        alpha: Angle = line[LineDataKeys.alpha]
+        delta_x_rough = length * calculate.cos_deg(alpha.valueDEC())
+        delta_y_rough = length * calculate.sin_deg(alpha.valueDEC())
+        delta_data_rough.append([delta_x_rough, delta_y_rough])
+        line[LineDataKeys.rough_delta_x] = delta_x_rough
+        line[LineDataKeys.rough_delta_y] = delta_y_rough
+        total_delta_rough[0] += delta_x_rough
+        total_delta_rough[1] += delta_y_rough
+        print(f"对于线段{name}, alpha={alpha}, Δx' = {delta_x_rough}, Δy'= {delta_y_rough}")
+    print(f"总的结果ΣΔx'、ΣΔy'为{total_delta_rough}\n")
+
+    f_x = f_y = 0
+    first_point_pos = raw_points[0][PointDataKeys.pos]
+    last_point_pos = raw_points[-1][PointDataKeys.pos]
+    f_x = total_delta_rough[0] - (last_point_pos[0] - first_point_pos[0])
+    f_y = total_delta_rough[1] - (last_point_pos[1] - first_point_pos[1])
+    print(f"计算出f_x {f_x} f_y {f_y}\n")
+
+    total_length = total_D(raw_lines)
+    print(f"总长度为{total_length}")
+    for i in range(len(raw_lines)):
+        line = raw_lines[i]
+        length = line[LineDataKeys.length]
+        name = line[LineDataKeys.name]
+        v_x_here = - (length / total_length) * f_x
+        v_y_here = - (length / total_length) * f_y
+        delta_x_true = line[LineDataKeys.rough_delta_x] + v_x_here
+        delta_y_true = line[LineDataKeys.rough_delta_y] + v_y_here
+        print(f"修正后的Δx_{name} = {delta_x_true} Δy_{name} = {delta_y_true}")
+        start_point_of_this_line = raw_points[i]
+        x_here = start_point_of_this_line[PointDataKeys.pos][0] + delta_x_true
+        y_here = start_point_of_this_line[PointDataKeys.pos][1] + delta_y_true
+        # 写入数据
+        if i != len(raw_lines) - 1:  # 不是最后一条线段才写入，最后一条线段的话，结束点是已知的
+            end_point_of_this_line = raw_points[i + 1]
+            end_point_of_this_line[PointDataKeys.pos] = [x_here, y_here]
+            print(f"此处的点{end_point_of_this_line[PointDataKeys.name]}的坐标为：{[x_here, y_here]}")
+
+
 if __name__ == "__main__":
-    connectionTraverse_calculate_v2(connectingTraverse_test_data, 3)
+    # connectionTraverse_calculate_v2(connectingTraverse_test_data, 3)
+    # connectionTraverse_calculate_V3(testing_data.closedTraverse_test_data, 3)
+    connectionTraverse_calculate_V3(testing_data.closedTraverse_experiment_data, 3)
 

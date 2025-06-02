@@ -5,18 +5,26 @@ from testing_data import connectingTraverse_test_data
 
 
 def the_coming_alpha(current_alpha, beta_here, beta_direction=AngleDirection.left_beta):
+    # print(f"正在计算下一条线的角度：从{current_alpha}转过{beta_direction}的{beta_here}")
     turning_angle_value = 180 - beta_here.valueDEC()
     # print(f"这是在计算点之后的这条线的alpha，当前alpha为{current_alpha}")
     if beta_direction == AngleDirection.left_beta:
         next_alpha_value = current_alpha.valueDEC() - turning_angle_value
     else:
         next_alpha_value = current_alpha.valueDEC() + turning_angle_value
-        next_alpha_value = round(next_alpha_value, 6)
-
+    next_alpha_value = round(next_alpha_value, 6)
+    next_alpha_value %= 360
+    # print(f"得到下一条线为{next_alpha_value}\n")
     return Angle(str(next_alpha_value))
 
 
 def get_last_alpha(first_alpha, points_data):
+    """
+    根据已知开始信息，折过这几个转折点这些角之后，得到的线的角度
+    :param first_alpha:
+    :param points_data:
+    :return:
+    """
     alpha = None
     print()
     for i in range(len(points_data)):
@@ -102,6 +110,27 @@ def get_accuracy(point, line):
     pos = point[PointDataKeys.pos]
     length = line[LineDataKeys.length]
     # 暂停开发。改用别的。
+
+
+def cal_alphas_roughly(first_alpha, points):
+    """
+    用于v3。初步计算各个线段的α'。
+
+    :return:
+    """
+    alphas = []
+    for i in range(len(points)):
+        point = points[i]
+
+        beta = point[PointDataKeys.beta_angle]
+        direction = point[PointDataKeys.beta_angle_direction]
+        if i == 0:
+            alpha = the_coming_alpha(first_alpha, beta, direction)
+        else:
+            alpha = the_coming_alpha(alphas[-1], beta, direction)
+        alphas.append(alpha)
+
+    return alphas
 
 
 if __name__ == "__main__":
