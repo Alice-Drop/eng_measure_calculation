@@ -31,6 +31,7 @@ def get_points_pos(points: list):
     # 从列表里装着的PointsItem里提取出各个点的坐标。顺便把工程角转换也包括进去
     result = []
     for point in points:
+        print(f"尝试绘制：{point}")
         result.append(eng_to_math_pos(point[PointDataKeys.pos]))
     return result
 
@@ -42,7 +43,7 @@ def draw(corrected_point_data):
     ttp.ensure_appearance(points_pos, ttp.OffsetMode.center)
     ttp.FONT_SCALING = True
 
-    ttp.SCALE = 1
+    # ttp.SCALE = 1
     print(f"当前scale: {ttp.SCALE}")
 
     ttp.write("start")
@@ -60,7 +61,7 @@ def draw(corrected_point_data):
                      name_color=ttp.Colors.blue, name_align=ttp.Align.CENTER)
         count += 1
 
-    tt.done()
+    # tt.done()
 
 
 if __name__ == "__main__":

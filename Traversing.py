@@ -234,6 +234,7 @@ def connectionTraverse_calculate_v2(traverse_data: dict, wanted_accuracy: int):
 
 
 def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
+    # v3已通过验证。作为唯一标准。
     print("开始分析......")
     if traverse_data.get(MeasureDataKeys.measureType) == MeasureType.ConnectingTraverse:
         print("传入的是附合导线测量数据。")
@@ -273,6 +274,7 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
                 v_beta = f_beta / len(raw_points)
             else:
                 v_beta = -(f_beta / len(raw_points))
+        v_beta = round(v_beta, 6)
 
         beta_here = raw_points[i][PointDataKeys.beta_angle]
         direction = raw_points[i][PointDataKeys.beta_angle_direction]
@@ -300,6 +302,8 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
         alpha: Angle = line[LineDataKeys.alpha]
         delta_x_rough = length * calculate.cos_deg(alpha.valueDEC())
         delta_y_rough = length * calculate.sin_deg(alpha.valueDEC())
+        delta_x_rough = round(delta_x_rough, wanted_accuracy)
+        delta_y_rough = round(delta_y_rough, wanted_accuracy)
         delta_data_rough.append([delta_x_rough, delta_y_rough])
         line[LineDataKeys.rough_delta_x] = delta_x_rough
         line[LineDataKeys.rough_delta_y] = delta_y_rough
@@ -329,15 +333,27 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
         start_point_of_this_line = raw_points[i]
         x_here = start_point_of_this_line[PointDataKeys.pos][0] + delta_x_true
         y_here = start_point_of_this_line[PointDataKeys.pos][1] + delta_y_true
+        x_here = round(x_here, wanted_accuracy)
+        y_here = round(y_here, wanted_accuracy)
         # 写入数据
         if i != len(raw_lines) - 1:  # 不是最后一条线段才写入，最后一条线段的话，结束点是已知的
             end_point_of_this_line = raw_points[i + 1]
             end_point_of_this_line[PointDataKeys.pos] = [x_here, y_here]
+
             print(f"此处的点{end_point_of_this_line[PointDataKeys.name]}的坐标为：{[x_here, y_here]}")
+
+    print("处理完成！")
+    # drawing.draw(raw_points)
+
+    # show_data.show_table(show_data.generate_points_table(raw_points, corrected_points, v_beta))
+    show_data.show_table(show_data.generate_lines_table_v3(raw_lines))
+
+    os.system("pause")
 
 
 if __name__ == "__main__":
     # connectionTraverse_calculate_v2(connectingTraverse_test_data, 3)
     # connectionTraverse_calculate_V3(testing_data.closedTraverse_test_data, 3)
-    connectionTraverse_calculate_V3(testing_data.closedTraverse_experiment_data, 3)
-
+    # connectionTraverse_calculate_V3(testing_data.closedTraverse_experiment_data, 3)
+    connectionTraverse_calculate_V3(testing_data.connectingTraverse_test_data, 3)
+    #connectionTraverse_calculate_v2(testing_data.connectingTraverse_test_data, 3)

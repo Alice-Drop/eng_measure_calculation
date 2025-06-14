@@ -24,6 +24,13 @@ def safe_start_data_file(path):
         print(f"警告，由于未关闭上次生成的文件，程序无法自动打开生成的表格“{path}”，新文件已生成，请关闭excel后自行打开新文件")
 
 def generate_points_table(raw_points, corrected_points, v_beta):
+    """
+    输出一个csv格式的分析报告。
+    :param raw_points: 各个点
+    :param corrected_points:
+    :param v_beta:
+    :return:
+    """
     output_path = "./点分析.csv"
     table = [POINT_TABLE_HEAD]
     if len(raw_points) != len(corrected_points):
@@ -78,6 +85,29 @@ def generate_lines_table(raw_lines, corrected_lines):
 
     return table
 
+def generate_lines_table_v3(lines):
+    # 新版本，为v3设计，线的数据都是由line来的
+    output_path = "线段分析.csv"
+    table = [LINE_TABLE_HEAD]
+    for i in range(len(lines)):
+        line = lines[i]
+        table.append([
+            line[LineDataKeys.name],
+            line[LineDataKeys.alpha],
+            line[LineDataKeys.length],  # 平距（线段长度）
+            line[LineDataKeys.rough_delta_x],
+            line[LineDataKeys.rough_delta_y],
+            line[LineDataKeys.true_delta_x],
+            line[LineDataKeys.true_delta_y]
+        ])
+
+    try:
+        aliceCSV.writeCSV(table, output_path=output_path, sheet_encoding="UTF-8-sig")
+        os.system(f"start {output_path}")
+    except PermissionError:
+        print(f"\n警告！！由于未关闭上次生成的文件，程序无法生成新表格“{output_path}”，请查看以下表格作为替代。")
+
+    return table
 
 def show_table(table):
     print()

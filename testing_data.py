@@ -79,3 +79,15 @@ connectingTraverse_test_data = {
     MeasureDataKeys.end_line_angle_alpha: Angle("46'45'24'")
 
 }
+
+if __name__ == '__main__':
+    import json
+    data_folder = "./data/"
+    with open(data_folder + 'closedTraverse_test_data.json', 'w') as f:
+        json.dump(closedTraverse_test_data, f,
+                  indent=3,
+                  default=angle_mangement.angle_to_json)
+    with open(data_folder + 'connectingTraverse_test_data.json', 'w') as f:
+        json.dump(connectingTraverse_test_data, f,
+                  indent=3,
+                  default=angle_mangement.angle_to_json)

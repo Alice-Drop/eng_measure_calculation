@@ -165,17 +165,17 @@ def goto(target_point: (list or tuple), line_mode=LineModes.solid, line_width=DE
          name_color=DEFAULT.FONT_COLOR,
          if_dot_at_end=True, dot_color=Colors.black, dot_diameter=DEFAULT.DOT_DIAMETER,
          dotted_line_length=DEFAULT.DOTTED_LINE_LENGTH, dotted_gap=DEFAULT.DOTTED_GAP):
-    print(f"\n收到前往{target_point}的要求, line_mode {line_mode}")
+    # print(f"\n收到前往{target_point}的要求, line_mode {line_mode}")
 
     # 对目标点完成偏移
     target_point[0] += OFFSET[0]
     target_point[1] += OFFSET[1]
-    print(f"加上偏移{OFFSET},为前往{target_point}")
+    # print(f"加上偏移{OFFSET},为前往{target_point}")
 
     # 对目标点缩放
     target_point[0] *= SCALE
     target_point[1] *= SCALE
-    print(f"加上缩放{SCALE}，确认为前往{target_point}")
+    # print(f"加上缩放{SCALE}，确认为前往{target_point}")
 
     line_width *= SCALE
     dot_diameter *= SCALE
@@ -251,7 +251,7 @@ def auto_offset(points_pos, offset_mode=OffsetMode.none):
         result = [0, 0]
     elif offset_mode == OffsetMode.at_start:
         result = [-points_pos[0][0], -points_pos[0][1]]  # 这种情况下注意是负的
-        print(f"已经设置偏移为第一个点{result}")
+        # print(f"已经设置偏移为第一个点{result}")
     elif offset_mode == OffsetMode.center:
         max_x = min_x = points_pos[0][0]
         max_y = min_y = points_pos[0][1]
@@ -268,7 +268,7 @@ def auto_offset(points_pos, offset_mode=OffsetMode.none):
                 max_y = y
             elif y < min_y:
                 min_y = y
-        print(f"正在计算偏移，max_x{max_x}, min_x{min_x}, max_y{max_y}, min_y{min_y}")
+        # print(f"正在计算偏移，max_x{max_x}, min_x{min_x}, max_y{max_y}, min_y{min_y}")
         result = [-(max_x + min_x) / 2, -(max_y + min_y) / 2]  # 这个也得是负的，是让中心点等效为0
 
     global OFFSET
@@ -287,18 +287,17 @@ def auto_scaling(points_pos):
 
     # 注意！需要先计算offset再计算这个，因为offset没有依赖，但是这个依赖offset
 
-
     width = tt.window_width()
     height = tt.window_height()
-    safe_padding_x = width * 0.1
-    safe_padding_y = height * 0.1
+    safe_padding_x = width * 0.2
+    safe_padding_y = height * 0.2
 
-    print(f"窗口大小：{width}, {height}")
+    # print(f"窗口大小：{width}, {height}")
 
     width -= 2 * safe_padding_x
     height -= 2 * safe_padding_y
 
-    print(f"除去编剧，大小为{width}, {height}")
+    # print(f"除去边距，大小为{width}, {height}")
 
     max_x = min_x = points_pos[0][0] + OFFSET[0]
     max_y = min_y = points_pos[0][1] + OFFSET[1]

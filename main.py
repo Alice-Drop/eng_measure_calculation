@@ -4,6 +4,8 @@ from ensureInput import ensureInput
 from Traversing import *
 import angle_mangement
 import json
+from easygui import msgbox, fileopenbox
+import load_data
 
 
 def parse_pos_txt(pos_txt: str, pos_type=int):
@@ -65,6 +67,13 @@ def main():
                 MeasureDataKeys.end_line_angle_alpha: end_alpha_angle
             }
 
+def main_v2():
+    print("请传入目标数据：")
+    data_path = fileopenbox("打开数据文件", "打开数据文件", filetypes=["*.json"])
+    if os.path.exists(data_path):
+        data = load_data.load_user_data(data_path)
+    else:
+        msgbox("警告！未正确指定文件。软件将退出。")
 
 if __name__ == "__main__":
     main()
