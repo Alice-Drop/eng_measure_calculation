@@ -264,6 +264,7 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
 
 
     print(f"当前是闭合导线。开始平差")
+    v_beta = 0
 
     for i in range(len(raw_points)):
         point = raw_points[i]
@@ -304,6 +305,7 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
         delta_y_rough = length * calculate.sin_deg(alpha.valueDEC())
         delta_x_rough = round(delta_x_rough, wanted_accuracy)
         delta_y_rough = round(delta_y_rough, wanted_accuracy)
+
         delta_data_rough.append([delta_x_rough, delta_y_rough])
         line[LineDataKeys.rough_delta_x] = delta_x_rough
         line[LineDataKeys.rough_delta_y] = delta_y_rough
@@ -329,6 +331,11 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
         v_y_here = - (length / total_length) * f_y
         delta_x_true = line[LineDataKeys.rough_delta_x] + v_x_here
         delta_y_true = line[LineDataKeys.rough_delta_y] + v_y_here
+        delta_x_true = round(delta_x_true, wanted_accuracy)
+        delta_y_true = round(delta_y_true, wanted_accuracy)
+
+        line[LineDataKeys.true_delta_x] = delta_x_true
+        line[LineDataKeys.true_delta_y] = delta_y_true
         print(f"修正后的Δx_{name} = {delta_x_true} Δy_{name} = {delta_y_true}")
         start_point_of_this_line = raw_points[i]
         x_here = start_point_of_this_line[PointDataKeys.pos][0] + delta_x_true
@@ -345,9 +352,9 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
     print("处理完成！")
     # drawing.draw(raw_points)
 
-    # show_data.show_table(show_data.generate_points_table(raw_points, corrected_points, v_beta))
+    show_data.show_table(show_data.generate_points_table_v3(raw_points, v_beta))
     show_data.show_table(show_data.generate_lines_table_v3(raw_lines))
-
+    print("分析结果已经保存为“点分析.csv”和“线段分析.csv”")
     os.system("pause")
 
 

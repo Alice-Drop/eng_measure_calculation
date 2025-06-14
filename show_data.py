@@ -57,6 +57,37 @@ def generate_points_table(raw_points, corrected_points, v_beta):
     return table
 
 
+def generate_points_table_v3(points, v_beta):
+    """
+    输出一个csv格式的分析报告。
+    :param points: 各个点
+    :param corrected_points:
+    :param v_beta:
+    :return:
+    """
+    output_path = "./点分析.csv"
+    table = [POINT_TABLE_HEAD]
+    for i in range(len(points)):
+        point = points[i]
+        v_beta_angle = Angle(str(v_beta))
+        table.append([
+            point[PointDataKeys.name],
+            point[PointDataKeys.beta_angle],
+            v_beta_angle,
+            point[PointDataKeys.beta_angle],
+            point[PointDataKeys.pos][0],
+            point[PointDataKeys.pos][1]
+        ])
+
+    try:
+        aliceCSV.writeCSV(table, output_path=output_path, sheet_encoding="UTF-8-sig")
+        os.system(f"start {output_path}")
+    except PermissionError:
+        print(f"\n警告！！由于未关闭上次生成的文件，程序无法生成新表格“{output_path}”，请查看以下表格作为替代。")
+
+    return table
+
+
 LINE_TABLE_HEAD = ["线段名称", "坐标方位角α", "平距（线段长度）", "坐标增量Δ'x（未改正）", "坐标增量Δ'y（未改正）",
                    "改正后的坐标增量Δx", "改正后的坐标增量Δy"]
 
@@ -91,6 +122,7 @@ def generate_lines_table_v3(lines):
     table = [LINE_TABLE_HEAD]
     for i in range(len(lines)):
         line = lines[i]
+        # print(f"正在读取line:{line}")
         table.append([
             line[LineDataKeys.name],
             line[LineDataKeys.alpha],
@@ -115,9 +147,9 @@ def show_table(table):
         string = ""
         for col in row:
             if strong_is_float(col):
-                string += f"{float(col):.3}\t"
+                string += f"{float(col)}\t\t\t\t"
                 print(f"{col}通过Float")
             else:
-                string += str(col) + "\t"
+                string += str(col) + "\t\t"
         print(string)
 

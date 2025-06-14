@@ -135,6 +135,7 @@ def eng_angle_to_math_angle(angle_value: float):
 class Angle:
     def __init__(self, string: str, angle_type=AngleTypes.eng_alpha):
         # print(f"受要求创建{string}为角度")
+        string = string.replace("_Angle:", "")
         self.string = string
         self.angle_type = angle_type
         if string.count("'") > 1:    # 之前是if ""' in ，但是没照顾到45'也是正确写法

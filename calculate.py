@@ -123,6 +123,8 @@ def cal_alphas_roughly(first_alpha, points):
         point = points[i]
 
         beta = point[PointDataKeys.beta_angle]
+        if type(beta) is not Angle:
+            beta = Angle(beta)
         direction = point[PointDataKeys.beta_angle_direction]
         if i == 0:
             alpha = the_coming_alpha(first_alpha, beta, direction)

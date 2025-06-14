@@ -4,8 +4,9 @@ from ensureInput import ensureInput
 from Traversing import *
 import angle_mangement
 import json
-from easygui import msgbox, fileopenbox
 import load_data
+from tkinter import filedialog
+from tkinter import messagebox as msgbox
 
 
 def parse_pos_txt(pos_txt: str, pos_type=int):
@@ -69,11 +70,18 @@ def main():
 
 def main_v2():
     print("请传入目标数据：")
-    data_path = fileopenbox("打开数据文件", "打开数据文件", filetypes=["*.json"])
+    data_path = filedialog.askopenfilename(filetypes=[("json文件", "*.json")], initialdir="./")
     if os.path.exists(data_path):
         data = load_data.load_user_data(data_path)
+        accuracy = input("保留的精度？（默认保留3位小数，如无异议直接按下回车）")
+        if not accuracy:
+            accuracy = 3
+        else:
+            accuracy = int(accuracy)
+
+        Traversing.connectionTraverse_calculate_V3(data, accuracy)
     else:
         msgbox("警告！未正确指定文件。软件将退出。")
 
 if __name__ == "__main__":
-    main()
+    main_v2()
