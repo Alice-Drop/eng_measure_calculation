@@ -361,7 +361,6 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
     lines_report = show_data.generate_lines_table_v3(raw_lines, wanted_accuracy)
     show_data.show_table(points_report)
     show_data.show_table(lines_report)
-    print("分析结果已经保存为“点分析.csv”和“线段分析.csv”")
 
     return [points_report, lines_report]
 

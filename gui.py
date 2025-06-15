@@ -8,7 +8,7 @@ import load_data, Traversing
 
 class MainWindow:
     def __init__(self):
-        DEFAULT_PATH = "/Users/alice/PycharmProjects/eng_measure_calculation/data/connectingTraverse_test_data.json"
+        DEFAULT_PATH = "./data/connectingTraverse_test_data.json"
         self.path = DEFAULT_PATH
         self.accuracy = 3
         self.son_windows = []

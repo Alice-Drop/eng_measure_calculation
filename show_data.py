@@ -2,7 +2,6 @@ import os
 
 from PySide6.QtWidgets import QTableView, QApplication
 
-import aliceCSV
 from basic_items_definition import *
 from gui import TableViewer
 
@@ -51,12 +50,6 @@ def generate_points_table(raw_points, corrected_points, v_beta):
             corrected_point[PointDataKeys.pos][1]
         ])
 
-    try:
-        aliceCSV.writeCSV(table, output_path=output_path, sheet_encoding="UTF-8-sig")
-        os.system(f"start {output_path}")
-    except PermissionError:
-        print(f"\n警告！！由于未关闭上次生成的文件，程序无法生成新表格“{output_path}”，请查看以下表格作为替代。")
-
     return table
 
 
@@ -82,12 +75,6 @@ def generate_points_table_v3(points, v_beta, accuracy=3):
             f"{point[PointDataKeys.pos][1]:.{accuracy}f}"
         ])
 
-    try:
-        aliceCSV.writeCSV(table, output_path=output_path, sheet_encoding="UTF-8-sig")
-        os.system(f"start {output_path}")
-    except PermissionError:
-        print(f"\n警告！！由于未关闭上次生成的文件，程序无法生成新表格“{output_path}”，请查看以下表格作为替代。")
-
     return table
 
 
@@ -111,12 +98,6 @@ def generate_lines_table(raw_lines, corrected_lines, accuracy=3):
             f"{corrected_line[LineDataKeys.true_delta_y]:.{accuracy}f}"
         ])
 
-    try:
-        aliceCSV.writeCSV(table, output_path=output_path, sheet_encoding="UTF-8-sig")
-        os.system(f"start {output_path}")
-    except PermissionError:
-        print(f"\n警告！！由于未关闭上次生成的文件，程序无法生成新表格“{output_path}”，请查看以下表格作为替代。")
-
     return table
 
 def generate_lines_table_v3(lines, accuracy=3):
@@ -135,12 +116,6 @@ def generate_lines_table_v3(lines, accuracy=3):
             f"{line[LineDataKeys.true_delta_x]:.{accuracy}f}",
             f"{line[LineDataKeys.true_delta_y]:.{accuracy}f}"
         ])
-
-    try:
-        aliceCSV.writeCSV(table, output_path=output_path, sheet_encoding="UTF-8-sig")
-        os.system(f"start {output_path}")
-    except PermissionError:
-        print(f"\n警告！！由于未关闭上次生成的文件，程序无法生成新表格“{output_path}”，请查看以下表格作为替代。")
 
     return table
 
