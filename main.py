@@ -1,12 +1,14 @@
+import sys
+from PySide6 import QtCore
+from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox
+import json
+
 import Traversing
-import turtlePlus as ttp
 from ensureInput import ensureInput
 from Traversing import *
 import angle_mangement
-import json
 import load_data
-from tkinter import filedialog
-from tkinter import messagebox as msgbox
+import gui
 
 
 def parse_pos_txt(pos_txt: str, pos_type=int):
@@ -70,18 +72,40 @@ def main():
 
 def main_v2():
     print("请传入目标数据：")
-    data_path = filedialog.askopenfilename(filetypes=[("json文件", "*.json")], initialdir="./")
-    if os.path.exists(data_path):
+    #data_path = QFileDialog.getOpenFileName(None, filter="json文件 *.json",dir="./")[0]
+    data_path = "/Users/alice/PycharmProjects/eng_measure_calculation/data/connectingTraverse_test_data.json"
+    print(str(data_path))
+    if os.path.exists(str(data_path)):
         data = load_data.load_user_data(data_path)
-        accuracy = input("保留的精度？（默认保留3位小数，如无异议直接按下回车）")
+        #accuracy = input("保留的精度？（默认保留3位小数，如无异议直接按下回车）")
+        accuracy = 3
         if not accuracy:
             accuracy = 3
         else:
             accuracy = int(accuracy)
 
-        Traversing.connectionTraverse_calculate_V3(data, accuracy)
+        points_report, lines_report = Traversing.connectionTraverse_calculate_V3(data, accuracy)
+        return [points_report, lines_report]
+
     else:
-        msgbox("警告！未正确指定文件。软件将退出。")
+        QMessageBox.warning(None, "警告", "警告！未正确指定文件。软件将退出。")
+        return []
+
+
+def main_v3():
+    app = QApplication([])
+
+    main_window = gui.MainWindow()
+    main_window.ui.show()
+
+    """for sheet in data:
+        print(sheet)
+        window = gui.TableViewer(sheet, sheet[0][0])
+        print(f"已经产生窗口，{window}")
+        window.show()
+        time.sleep(1) """
+    app.exec()
 
 if __name__ == "__main__":
-    main_v2()
+    global_windows_main = []
+    main_v3()

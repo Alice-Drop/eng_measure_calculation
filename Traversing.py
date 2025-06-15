@@ -228,13 +228,18 @@ def connectionTraverse_calculate_v2(traverse_data: dict, wanted_accuracy: int):
 
         print(f"已完成，正在生成表格......")
         show_data.show_table(show_data.generate_points_table(raw_points, corrected_points, v_beta))
-        show_data.show_table(show_data.generate_lines_table(raw_lines, corrected_lines))
+        show_data.show_table(show_data.generate_lines_table(raw_lines, corrected_lines, wanted_accuracy), wanted_accuracy)
         drawing.draw(corrected_points)
         os.system("pause")
 
 
 def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
+    """
     # v3已通过验证。作为唯一标准。
+    :param traverse_data:
+    :param wanted_accuracy:
+    :return: 返回两个数据表格。
+    """
     print("开始分析......")
     if traverse_data.get(MeasureDataKeys.measureType) == MeasureType.ConnectingTraverse:
         print("传入的是附合导线测量数据。")
@@ -352,10 +357,13 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
     print("处理完成！")
     # drawing.draw(raw_points)
 
-    show_data.show_table(show_data.generate_points_table_v3(raw_points, v_beta))
-    show_data.show_table(show_data.generate_lines_table_v3(raw_lines))
+    points_report = show_data.generate_points_table_v3(raw_points, v_beta, wanted_accuracy)
+    lines_report = show_data.generate_lines_table_v3(raw_lines, wanted_accuracy)
+    show_data.show_table(points_report)
+    show_data.show_table(lines_report)
     print("分析结果已经保存为“点分析.csv”和“线段分析.csv”")
-    os.system("pause")
+
+    return [points_report, lines_report]
 
 
 if __name__ == "__main__":

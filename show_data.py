@@ -1,7 +1,10 @@
 import os
 
+from PySide6.QtWidgets import QTableView, QApplication
+
 import aliceCSV
 from basic_items_definition import *
+from gui import TableViewer
 
 POINT_TABLE_HEAD = ["点号", "角度观测值（夹角β）", "改正数", "改正后角值", "x坐标", "y坐标"]
 
@@ -57,7 +60,7 @@ def generate_points_table(raw_points, corrected_points, v_beta):
     return table
 
 
-def generate_points_table_v3(points, v_beta):
+def generate_points_table_v3(points, v_beta, accuracy=3):
     """
     输出一个csv格式的分析报告。
     :param points: 各个点
@@ -75,8 +78,8 @@ def generate_points_table_v3(points, v_beta):
             point[PointDataKeys.beta_angle],
             v_beta_angle,
             point[PointDataKeys.beta_angle],
-            point[PointDataKeys.pos][0],
-            point[PointDataKeys.pos][1]
+            f"{point[PointDataKeys.pos][0]:.{accuracy}f}",
+            f"{point[PointDataKeys.pos][1]:.{accuracy}f}"
         ])
 
     try:
@@ -92,7 +95,7 @@ LINE_TABLE_HEAD = ["线段名称", "坐标方位角α", "平距（线段长度�
                    "改正后的坐标增量Δx", "改正后的坐标增量Δy"]
 
 
-def generate_lines_table(raw_lines, corrected_lines):
+def generate_lines_table(raw_lines, corrected_lines, accuracy=3):
     output_path = "线段分析.csv"
     table = [LINE_TABLE_HEAD]
     for i in range(len(raw_lines)):
@@ -101,11 +104,11 @@ def generate_lines_table(raw_lines, corrected_lines):
         table.append([
             raw_line[LineDataKeys.name],
             corrected_line[LineDataKeys.alpha],
-            corrected_line[LineDataKeys.length],  # 平距（线段长度）
-            corrected_line[LineDataKeys.rough_delta_x],
-            corrected_line[LineDataKeys.rough_delta_y],
-            corrected_line[LineDataKeys.true_delta_x],
-            corrected_line[LineDataKeys.true_delta_y]
+            f"{corrected_line[LineDataKeys.length]:.{accuracy}f}",  # 平距（线段长度）
+            f"{corrected_line[LineDataKeys.rough_delta_x]:.{accuracy}f}",
+            f"{corrected_line[LineDataKeys.rough_delta_y]:.{accuracy}f}",
+            f"{corrected_line[LineDataKeys.true_delta_x]:.{accuracy}f}",
+            f"{corrected_line[LineDataKeys.true_delta_y]:.{accuracy}f}"
         ])
 
     try:
@@ -116,7 +119,7 @@ def generate_lines_table(raw_lines, corrected_lines):
 
     return table
 
-def generate_lines_table_v3(lines):
+def generate_lines_table_v3(lines, accuracy=3):
     # 新版本，为v3设计，线的数据都是由line来的
     output_path = "线段分析.csv"
     table = [LINE_TABLE_HEAD]
@@ -126,11 +129,11 @@ def generate_lines_table_v3(lines):
         table.append([
             line[LineDataKeys.name],
             line[LineDataKeys.alpha],
-            line[LineDataKeys.length],  # 平距（线段长度）
-            line[LineDataKeys.rough_delta_x],
-            line[LineDataKeys.rough_delta_y],
-            line[LineDataKeys.true_delta_x],
-            line[LineDataKeys.true_delta_y]
+            f"{line[LineDataKeys.length]:.{accuracy}f}",  # 平距（线段长度）
+            f"{line[LineDataKeys.rough_delta_x]:.{accuracy}f}",
+            f"{line[LineDataKeys.rough_delta_y]:.{accuracy}f}",
+            f"{line[LineDataKeys.true_delta_x]:.{accuracy}f}",
+            f"{line[LineDataKeys.true_delta_y]:.{accuracy}f}"
         ])
 
     try:
@@ -141,15 +144,17 @@ def generate_lines_table_v3(lines):
 
     return table
 
-def show_table(table):
+def show_table(table, accuracy=3):
     print()
     for row in table:
         string = ""
         for col in row:
             if strong_is_float(col):
-                string += f"{float(col)}\t\t\t\t"
+                string += f"{float(col):.{accuracy}f}\t\t\t\t"
                 print(f"{col}通过Float")
             else:
                 string += str(col) + "\t\t"
         print(string)
+    table_window = TableViewer(table)
+    return table_window
 
