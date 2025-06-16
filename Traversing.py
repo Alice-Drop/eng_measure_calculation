@@ -362,6 +362,8 @@ def connectionTraverse_calculate_V3(traverse_data: dict, wanted_accuracy: int):
     show_data.show_table(points_report)
     show_data.show_table(lines_report)
 
+    drawing.draw(raw_points)   # 需要处理好tk和pyside6的兼容性问题才能开启
+
     return [points_report, lines_report]
 
 

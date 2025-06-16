@@ -1,9 +1,7 @@
 import os
 
-from PySide6.QtWidgets import QTableView, QApplication
-
 from basic_items_definition import *
-from gui import TableViewer
+from gui_tk import TableViewer
 
 POINT_TABLE_HEAD = ["点号", "角度观测值（夹角β）", "改正数", "改正后角值", "x坐标", "y坐标"]
 
@@ -130,6 +128,10 @@ def show_table(table, accuracy=3):
             else:
                 string += str(col) + "\t\t"
         print(string)
-    table_window = TableViewer(table)
+    if "点" in table[0][0]:
+        title = "各点数据"
+    else:
+        title = "各线段数据"
+    table_window = TableViewer(table, title)
     return table_window
 

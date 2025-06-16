@@ -1,14 +1,10 @@
-import sys
-from PySide6 import QtCore
-from PySide6.QtWidgets import QApplication, QFileDialog, QMessageBox
-import json
 
 import Traversing
-from ensureInput import ensureInput
-from Traversing import *
-import angle_mangement
-import load_data
+import gui_tk
+
 import gui
+
+import tkinter as tk
 
 
 def parse_pos_txt(pos_txt: str, pos_type=int):
@@ -26,7 +22,7 @@ def parse_pos_txt(pos_txt: str, pos_type=int):
 
     return pos
 
-def main():
+"""def main():
     with open("example_connectingTraverse.json", "w", encoding="UTF-8") as my_file:
         json.dump(Traversing.connectingTraverse_test_data, my_file,
                   indent=3,
@@ -57,7 +53,7 @@ def main():
                 beta = angle_mangement.Angle(start_point_answer)
                 direction = ensureInput(f"这个转折角是：\nL.左角\nR.右角\n", accepted_values=["L", "R"])
 
-                points.append(Traversing.PointDataItem([], point_count, beta, ))
+                points.append(Traversing.PointDataItem([], point_count, beta, direction))
                 print("\n")
 
             end_alpha_angle = angle_mangement.Angle(
@@ -98,14 +94,21 @@ def main_v3():
     main_window = gui.MainWindow()
     main_window.ui.show()
 
-    """for sheet in data:
+    for sheet in data:
         print(sheet)
         window = gui.TableViewer(sheet, sheet[0][0])
         print(f"已经产生窗口，{window}")
         window.show()
-        time.sleep(1) """
+        time.sleep(1) 
     app.exec()
+"""
+
+def main_v4():
+    root = tk.Tk()
+    app = gui_tk.MainWindow(root)
+    root.mainloop()
+
 
 if __name__ == "__main__":
     global_windows_main = []
-    main_v3()
+    main_v4()
