@@ -5,6 +5,11 @@ from gui_tk import TableViewer
 
 POINT_TABLE_HEAD = ["点号", "角度观测值（夹角β）", "改正数", "改正后角值", "x坐标", "y坐标"]
 
+def log(content=""):
+    if_log = False
+    if if_log:
+        print(content)
+
 
 def strong_is_float(string):
     if (type(string) is str) and ("." in string):
@@ -21,7 +26,7 @@ def safe_start_data_file(path):
     try:
         os.system(f"start {path}")
     except PermissionError:
-        print(f"警告，由于未关闭上次生成的文件，程序无法自动打开生成的表格“{path}”，新文件已生成，请关闭excel后自行打开新文件")
+        log(f"警告，由于未关闭上次生成的文件，程序无法自动打开生成的表格“{path}”，新文件已生成，请关闭excel后自行打开新文件")
 
 def generate_points_table(raw_points, corrected_points, v_beta):
     """
@@ -104,7 +109,7 @@ def generate_lines_table_v3(lines, accuracy=3):
     table = [LINE_TABLE_HEAD]
     for i in range(len(lines)):
         line = lines[i]
-        # print(f"正在读取line:{line}")
+        # log(f"正在读取line:{line}")
         table.append([
             line[LineDataKeys.name],
             line[LineDataKeys.alpha],
@@ -118,16 +123,16 @@ def generate_lines_table_v3(lines, accuracy=3):
     return table
 
 def show_table(table, accuracy=3):
-    print()
+    log()
     for row in table:
         string = ""
         for col in row:
             if strong_is_float(col):
                 string += f"{float(col):.{accuracy}f}\t\t\t\t"
-                print(f"{col}通过Float")
+                log(f"{col}通过Float")
             else:
                 string += str(col) + "\t\t"
-        print(string)
+        log(string)
     if "点" in table[0][0]:
         title = "各点数据"
     else:

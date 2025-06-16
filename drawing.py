@@ -4,6 +4,12 @@ from basic_items_definition import *
 from typing import List
 
 
+
+def log(content=""):
+    if_log = False
+    if if_log:
+        print(content)
+
 def eng_angle_to_math_angle(eng_angle):
     return (90 - eng_angle) % 360
 
@@ -31,7 +37,7 @@ def get_points_pos(points: list):
     # 从列表里装着的PointsItem里提取出各个点的坐标。顺便把工程角转换也包括进去
     result = []
     for point in points:
-        print(f"尝试绘制：{point}")
+        log(f"尝试绘制：{point}")
         result.append(eng_to_math_pos(point[PointDataKeys.pos]))
     return result
 
@@ -44,12 +50,12 @@ def draw(corrected_point_data):
     ttp.FONT_SCALING = True
 
     # ttp.SCALE = 1
-    print(f"当前scale: {ttp.SCALE}")
+    log(f"当前scale: {ttp.SCALE}")
 
     ttp.write("start")
     count = 0
     for point in corrected_point_data:
-        print(f"在{point[PointDataKeys.name]}点{point[PointDataKeys.pos]}，offset为{ttp.OFFSET}")
+        log(f"在{point[PointDataKeys.name]}点{point[PointDataKeys.pos]}，offset为{ttp.OFFSET}")
         math_pos = eng_to_math_pos(point[PointDataKeys.pos])
         if count == 0:
             ttp.goto(math_pos, line_mode=ttp.LineModes.none,

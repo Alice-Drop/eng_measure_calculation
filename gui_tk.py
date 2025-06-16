@@ -9,10 +9,17 @@ import Traversing
 
 # 前面定义的 TableViewer 类复用（略去重复定义）
 
+
+def log(content=""):
+    if_log = False
+    if if_log:
+        print(content)
+
+
 class TableViewer(tk.Toplevel):
     def __init__(self, data, title="TableViewer"):
         super().__init__()
-        print(f"TableViewer被创建: {title}")
+        log(f"TableViewer被创建: {title}")
         self.title(title)
         self.geometry("1000x300")
 
@@ -111,7 +118,7 @@ class MainWindow:
 
         data = load_data.load_user_data(self.path)
         points_report, lines_report = Traversing.connectionTraverse_calculate_V3(data, accuracy)
-        print(points_report[0][0])
+        log(points_report[0][0])
         # window_1 = TableViewer(points_report, points_report[0][0])
         # window_1.geometry("+100+200")
         # window_2 = TableViewer(lines_report, lines_report[0][0])

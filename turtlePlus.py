@@ -48,6 +48,11 @@ SCALE = 1.0
 FONT_SCALING = False
 OFFSET = [0, 0]
 
+def log(content=""):
+    if_log = False
+    if if_log:
+        print(content)
+
 
 def set_scale(scale_value):
     global SCALE
@@ -165,17 +170,17 @@ def goto(target_point: (list or tuple), line_mode=LineModes.solid, line_width=DE
          name_color=DEFAULT.FONT_COLOR,
          if_dot_at_end=True, dot_color=Colors.black, dot_diameter=DEFAULT.DOT_DIAMETER,
          dotted_line_length=DEFAULT.DOTTED_LINE_LENGTH, dotted_gap=DEFAULT.DOTTED_GAP):
-    # print(f"\n收到前往{target_point}的要求, line_mode {line_mode}")
+    # log(f"\n收到前往{target_point}的要求, line_mode {line_mode}")
 
     # 对目标点完成偏移
     target_point[0] += OFFSET[0]
     target_point[1] += OFFSET[1]
-    # print(f"加上偏移{OFFSET},为前往{target_point}")
+    # log(f"加上偏移{OFFSET},为前往{target_point}")
 
     # 对目标点缩放
     target_point[0] *= SCALE
     target_point[1] *= SCALE
-    # print(f"加上缩放{SCALE}，确认为前往{target_point}")
+    # log(f"加上缩放{SCALE}，确认为前往{target_point}")
 
     line_width *= SCALE
     dot_diameter *= SCALE
@@ -202,7 +207,7 @@ def goto(target_point: (list or tuple), line_mode=LineModes.solid, line_width=DE
         # 不绘制线
         tt.penup()
         tt.goto(target_point[0], target_point[1])
-    print(f"已到达{target_point}")
+    log(f"已到达{target_point}")
     if if_dot_at_end:
         tt.dot(dot_diameter, dot_color)
 
@@ -251,7 +256,7 @@ def auto_offset(points_pos, offset_mode=OffsetMode.none):
         result = [0, 0]
     elif offset_mode == OffsetMode.at_start:
         result = [-points_pos[0][0], -points_pos[0][1]]  # 这种情况下注意是负的
-        # print(f"已经设置偏移为第一个点{result}")
+        # log(f"已经设置偏移为第一个点{result}")
     elif offset_mode == OffsetMode.center:
         max_x = min_x = points_pos[0][0]
         max_y = min_y = points_pos[0][1]
@@ -268,12 +273,12 @@ def auto_offset(points_pos, offset_mode=OffsetMode.none):
                 max_y = y
             elif y < min_y:
                 min_y = y
-        # print(f"正在计算偏移，max_x{max_x}, min_x{min_x}, max_y{max_y}, min_y{min_y}")
+        # log(f"正在计算偏移，max_x{max_x}, min_x{min_x}, max_y{max_y}, min_y{min_y}")
         result = [-(max_x + min_x) / 2, -(max_y + min_y) / 2]  # 这个也得是负的，是让中心点等效为0
 
     global OFFSET
     OFFSET = result
-    print(f"自动offset已完成，设置为{result}")
+    log(f"自动offset已完成，设置为{result}")
 
     return result
 
@@ -292,12 +297,12 @@ def auto_scaling(points_pos):
     safe_padding_x = width * 0.2
     safe_padding_y = height * 0.2
 
-    # print(f"窗口大小：{width}, {height}")
+    # log(f"窗口大小：{width}, {height}")
 
     width -= 2 * safe_padding_x
     height -= 2 * safe_padding_y
 
-    # print(f"除去边距，大小为{width}, {height}")
+    # log(f"除去边距，大小为{width}, {height}")
 
     max_x = min_x = points_pos[0][0] + OFFSET[0]
     max_y = min_y = points_pos[0][1] + OFFSET[1]
@@ -308,7 +313,7 @@ def auto_scaling(points_pos):
 
         x += OFFSET[0]
         y += OFFSET[1]
-        print(f"offset后点{x},{y}")
+        log(f"offset后点{x},{y}")
         if x > max_x:
             max_x = x
         elif x < min_x:
@@ -318,10 +323,10 @@ def auto_scaling(points_pos):
             max_y = y
         elif y < min_y:
             min_y = y
-    print(f"正在计算scale，max_x{max_x}, min_x{min_x}, max_y{max_y}, min_y{min_y}")
+    log(f"正在计算scale，max_x{max_x}, min_x{min_x}, max_y{max_y}, min_y{min_y}")
     extreme_x = max(abs(max_x), abs(min_x))
     extreme_y = max(abs(max_y), abs(min_y))
-    print(f"当前偏离原点最严重的x为{extreme_x}, y为{extreme_y},此即为核心图像大小")
+    log(f"当前偏离原点最严重的x为{extreme_x}, y为{extreme_y},此即为核心图像大小")
 
     activate_width = extreme_x * 2
     activate_height = extreme_y * 2
